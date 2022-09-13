@@ -8,6 +8,8 @@ I used sin and cos functions to manipulate the verticies into a twisting and tur
 
 https://user-images.githubusercontent.com/65415823/189809965-02ec4b4e-b731-4703-8837-0eedf46a5496.mp4
 
+Link to Deployment: https://pojojojo21.github.io/hw00-intro-base/
+
 # HW 0: Intro to Javascript and WebGL
 
 <p align="center">
