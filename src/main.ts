@@ -94,7 +94,9 @@ function main() {
       prevTesselations = controls.tesselations;
       icosphere = new Icosphere(vec3.fromValues(0, 0, 0), 1, prevTesselations);
       icosphere.create();
-    }    
+    }
+    
+    // check if colors change
     if(controls.red != prevRed)
     {
       prevRed = controls.red
