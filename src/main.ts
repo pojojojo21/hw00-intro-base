@@ -26,6 +26,7 @@ let prevTesselations: number = 5;
 let prevRed: number = 255;
 let prevGreen: number = 0;
 let prevBlue: number = 0;
+let m_time: number = 0;
 
 function loadScene() {
   icosphere = new Icosphere(vec3.fromValues(0, 0, 0), 1, controls.tesselations);
@@ -72,15 +73,15 @@ function main() {
   renderer.setClearColor(0.2, 0.2, 0.2, 1);
   gl.enable(gl.DEPTH_TEST);
 
-  const lambert = new ShaderProgram([
-    new Shader(gl.VERTEX_SHADER, require('./shaders/lambert-vert.glsl')),
-    new Shader(gl.FRAGMENT_SHADER, require('./shaders/lambert-frag.glsl')),
-  ]);
-
-  // const custom1 = new ShaderProgram([
+  // const lambert = new ShaderProgram([
   //   new Shader(gl.VERTEX_SHADER, require('./shaders/lambert-vert.glsl')),
-  //   new Shader(gl.FRAGMENT_SHADER, require('./shaders/custom-frag.glsl')),
+  //   new Shader(gl.FRAGMENT_SHADER, require('./shaders/lambert-frag.glsl')),
   // ]);
+
+  const custom1 = new ShaderProgram([
+    new Shader(gl.VERTEX_SHADER, require('./shaders/custom-vert.glsl')),
+    new Shader(gl.FRAGMENT_SHADER, require('./shaders/custom-frag.glsl')),
+  ]);
 
   // This function will be called every frame
   function tick() {
@@ -107,10 +108,15 @@ function main() {
       prevBlue = controls.blue
     }
 
-    lambert.setGeometryColor(vec4.fromValues(controls.red/255., controls.green/255., controls.blue/255., 1));
-    // custom1.setGeometryColor(vec4.fromValues(controls.red/255., controls.green/255., controls.blue/255., 1));
+    // set Color
+    // lambert.setGeometryColor(vec4.fromValues(controls.red/255., controls.green/255., controls.blue/255., 1));
+    custom1.setGeometryColor(vec4.fromValues(controls.red/255., controls.green/255., controls.blue/255., 1));
 
-    renderer.render(camera, lambert, [
+    // set time
+    custom1.setTime(m_time);
+    m_time++;
+
+    renderer.render(camera, custom1, [
       // icosphere,
       // square,
       cube,

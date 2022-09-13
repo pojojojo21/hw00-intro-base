@@ -18,54 +18,72 @@ uniform vec4 u_Color; // The color with which to render this instance of geometr
 in vec4 fs_Nor;
 in vec4 fs_LightVec;
 in vec4 fs_Col;
+in vec4 fs_Pos;
 
 out vec4 out_Col; // This is the final output color that you will see on your
                   // screen for the pixel that is currently being processed.
 
-float perlinNoise3D(vec3 p) {
-    float surfletSum = 0.f;
-    // Iterate over the four integer corners surrounding uv
-    for(int dx = 0; dx <= 1; ++dx) {
-        for(int dy = 0; dy <= 1; ++dy) {
-            for(int dz = 0; dz <= 1; ++dz) {
-                surfletSum += surflet3d(p, floor(p) + vec3(dx, dy, dz));
-            }
-        }
-    }
-    return surfletSum;
+float noise3D( vec3 p ) {
+    return fract(sin(dot(p, vec3(127.1f, 311.7f, 245.3f))) *
+                 43758.5453);
 }
 
-float surflet3d(vec3 p, vec3 gridPoint) {
-    // Compute the distance between p and the grid point along each axis, and warp it with a
-    // quintic function so we can smooth our cells
-    vec3 t2 = abs(p - gridPoint);
-    vec3 t = vec3(1.f) - 6.f * vec3(pow(t2[0], 5.f),pow(t2[1], 5.f),pow(t2[2], 5.f)) + 15.f *
-            vec3(pow(t2[0], 4.f),pow(t2[1], 4.f),pow(t2[2], 4.f)) - 10.f *
-            vec3(pow(t2[0], 3.f),pow(t2[1], 3.f),pow(t2[2], 3.f));
-    // Get the random vector for the grid point (assume we wrote a function random2
-    // that returns a vec2 in the range [0, 1])
-    vec3 gradient = normalize(random3(gridPoint) * 2.f - vec3(1., 1., 1.));
-    // Get the vector from the grid point to P
-    vec3 diff = p - gridPoint;
-    // Get the value of our height field by dotting grid->P with our gradient
-    float height = dot(diff, gradient);
-    // Scale our height field (i.e. reduce it) by our polynomial falloff function
-    return height * t.x * t.y * t.z;
+float interpNoise3D(float x, float y, float z) {
+    int intX = int(floor(x));
+    float fractX = fract(x);
+    int intY = int(floor(y));
+    float fractY = fract(y);
+    int intZ = int(floor(z));
+    float fractZ = fract(z);
+
+    float v1 = noise3D(vec3(intX, intY, intZ));
+    float v2 = noise3D(vec3(intX + 1, intY, intZ));
+    float v3 = noise3D(vec3(intX, intY + 1, intZ));
+    float v4 = noise3D(vec3(intX, intY, intZ + 1));
+    float v5 = noise3D(vec3(intX + 1, intY + 1, intZ));
+    float v6 = noise3D(vec3(intX + 1, intY, intZ + 1));
+    float v7 = noise3D(vec3(intX, intY + 1, intZ + 1));
+    float v8 = noise3D(vec3(intX + 1, intY + 1, intZ + 1));
+
+    float i1 = mix(v1, v2, fractX);
+    float i2 = mix(v3, v4, fractX);
+    float i3 = mix(v5, v6, fractX);
+    float i4 = mix(v7, v8, fractX);
+    float j1 = mix(i1, i2, fractY);
+    float j2 = mix(i3, i4, fractY);
+
+    return mix(j1, j2, fractZ);
+}
+
+float fbm3D(float x, float y, float z) {
+    float total = 0.f;
+    float persistence = 0.5f;
+    int octaves = 8;
+    float freq = 2.f;
+    float amp = 0.5f;
+    for(int i = 1; i <= octaves; i++) {
+        total += interpNoise3D(x * freq,
+                               y * freq, z * freq) * amp;
+
+        freq *= 2.f;
+        amp *= persistence;
+    }
+    return total;
 }
 
 void main()
 {
     // Material base color (before shading)
         vec4 diffuseColor = u_Color;
-
-        diffuseColor = diffuseColor + vec4(perlinNoise3D(diffuseColor.xyz), 0)
+        float fbmNoise = fbm3D(float(fs_Pos.x), float(fs_Pos.y), float(fs_Pos.z));
+        diffuseColor = clamp(diffuseColor + vec4(vec3(fbmNoise, fbmNoise, -1.f * fbmNoise), 0.f), 0.f, 1.f);
 
         // Calculate the diffuse term for Lambert shading
         float diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
         // Avoid negative lighting values
         // diffuseTerm = clamp(diffuseTerm, 0, 1);
 
-        float ambientTerm = 0.2;
+        float ambientTerm = 0.2f;
 
         float lightIntensity = diffuseTerm + ambientTerm;   //Add a small float value to the color multiplier
                                                             //to simulate ambient lighting. This ensures that faces that are not
