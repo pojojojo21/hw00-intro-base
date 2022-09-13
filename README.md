@@ -1,3 +1,9 @@
+## Exploring FBm in 3D and Manipulating Vertices Using Sin Curves
+
+I used a noise function and interpolation to create a 3D fbm noise function which created the pattern in the picture below.
+
+I used sin and cos functions to manipulate the verticies into a twisting and turning oscillation.
+
 # HW 0: Intro to Javascript and WebGL
 
 <p align="center">
@@ -75,5 +81,3 @@ To check if everything is on the right track:
   - Interfaces https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API
   - Types https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Types
   - Constants https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Constants
-
-## Exploring FBm in 3D and Manipulating Vertices Using Sin Curves
