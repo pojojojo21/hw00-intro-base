@@ -2,7 +2,11 @@
 
 I used a noise function and interpolation to create a 3D fbm noise function which created the pattern in the picture below.
 
+<img width="614" alt="Picture of Noise Affect on Color" src="https://user-images.githubusercontent.com/65415823/189809879-ba7544a5-b36a-4bb7-b76e-5db09a5cc953.png">
+
 I used sin and cos functions to manipulate the verticies into a twisting and turning oscillation.
+
+https://user-images.githubusercontent.com/65415823/189809965-02ec4b4e-b731-4703-8837-0eedf46a5496.mp4
 
 # HW 0: Intro to Javascript and WebGL
 
