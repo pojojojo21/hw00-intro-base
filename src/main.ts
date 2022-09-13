@@ -116,6 +116,7 @@ function main() {
     custom1.setTime(m_time);
     m_time++;
 
+    // render
     renderer.render(camera, custom1, [
       // icosphere,
       // square,
